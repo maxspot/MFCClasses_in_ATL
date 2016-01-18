@@ -6,19 +6,66 @@ CMyString::CMyString()
 {
 }
 
+CMyString::CMyString(const CMyString &strSrc)		// Create from "CMyString"
+{
+	Set(strSrc);
+}
+
 CMyString::CMyString( const wchar_t * pStr)
 {
 	Set(pStr);
 }
 
+CMyString::CMyString(const wchar_t chOld)
+{
+	m_strData.push_back(chOld);
+}
 
 CMyString::~CMyString()
 {
 }
 
+void CMyString::operator=(const CMyString & strSrc)
+{
+	Set(strSrc);
+}
+
+void CMyString::operator=(const wchar_t * pStr)
+{
+	Set(pStr);
+}
+
+void CMyString::operator=(wchar_t ch)
+{
+	Set(ch);
+}
+
+CMyString CMyString::operator+(const CMyString & strPlus)
+{
+	CMyString		strSum;
+	strSum.m_strData = m_strData + strPlus.m_strData;
+	return strSum;
+}
+
+const CMyString & CMyString::operator+=(const CMyString & string)
+{
+	return *this + string;
+}
+
+void CMyString::Set(const CMyString & strSrc)
+{
+	m_strData = strSrc.m_strData;
+}
+
 void CMyString::Set(const wchar_t * pStr)
 {
 	m_strData = std::wstring(pStr);
+}
+
+void CMyString::Set(wchar_t ch)
+{
+	m_strData.clear();
+	m_strData.push_back(ch);
 }
 
 void CMyString::fmt(wchar_t* szFmt, ...)
@@ -189,17 +236,10 @@ int CMyString::Find(const wchar_t * pStrToFind, int nStart) const
 
 int CMyString::Replace(wchar_t chOld, wchar_t chNew)
 {
-	replace_all()
-	size_t			start_pos = 0;
-	int				nChanges = 0;
-	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
-	{
-		m_strData.replace(start_pos, from.length(), to);
-		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-		nChanges++;
-	}
-	return nChanges;
-	return 0;
+	CMyString			strOld(chOld);
+	CMyString			strNew(chNew);
+
+	return replace_all(*this, strOld, strNew);
 }
 
 int CMyString::Replace(const wchar_t * lpszOld, const wchar_t * lpszNew)
@@ -207,8 +247,14 @@ int CMyString::Replace(const wchar_t * lpszOld, const wchar_t * lpszNew)
 	CMyString			strOld(lpszOld);
 	CMyString			strNew(lpszNew);
 
-	replace_all( *this, )
-	return 0;
+	return replace_all(*this, strOld, strNew);
+}
+
+CMyString CMyString::Left(int nCount) const
+{
+	CMyString			strOut;
+	strOut.m_strData = m_strData.substr(0, nCount);
+	return strOut;
 }
 
 int CMyString::replace_all( CMyString &str, CMyString from, CMyString to)
